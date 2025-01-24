@@ -8,3 +8,9 @@ spring:
       access-expiration-time: 600000
       refresh-expiration-time: 1200000
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+
