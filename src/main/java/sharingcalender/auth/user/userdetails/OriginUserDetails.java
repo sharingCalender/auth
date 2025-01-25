@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import sharingcalender.auth.dto.OriginUserDto;
 
+
 public class OriginUserDetails implements UserDetails {
 
     private final OriginUserDto originUserDto;

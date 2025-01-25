@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import sharingcalender.auth.dto.OriginUserDto;
 
-@FeignClient(name = "calender-service")
+@FeignClient(value = "calender-service")
 public interface OriginUserAdapter {
 
     @GetMapping("/api/calender/originUser/{username}")
