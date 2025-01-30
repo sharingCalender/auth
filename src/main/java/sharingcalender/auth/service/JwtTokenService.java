@@ -11,7 +11,6 @@ import sharingcalender.auth.jwt.JwtUtil;
 @RequiredArgsConstructor
 public class JwtTokenService {
 
-    private final RedisTemplate<String, String> redisTemplate;
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
 

@@ -48,6 +48,8 @@ public class SecurityConfig {
 
             .httpBasic(AbstractHttpConfigurer::disable)
 
+            .logout(AbstractHttpConfigurer::disable)
+
             .cors(AbstractHttpConfigurer::disable)
 
             .sessionManagement((session) -> session

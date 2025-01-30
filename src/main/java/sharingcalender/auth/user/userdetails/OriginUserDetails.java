@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import sharingcalender.auth.dto.OriginUserDto;
+import sharingcalender.auth.dto.UserOriginInfoResponseDto;
 
 
 public class OriginUserDetails implements UserDetails {
 
-    private final OriginUserDto originUserDto;
+    private final UserOriginInfoResponseDto userOriginInfoResponseDto;
 
-    public OriginUserDetails(OriginUserDto originUserDto) {
-        this.originUserDto = originUserDto;
+    public OriginUserDetails(UserOriginInfoResponseDto userOriginInfoResponseDto) {
+        this.userOriginInfoResponseDto = userOriginInfoResponseDto;
     }
 
     @Override
@@ -25,12 +25,12 @@ public class OriginUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return originUserDto.password();
+        return userOriginInfoResponseDto.password();
     }
 
     @Override
     public String getUsername() {
-        return originUserDto.username();
+        return userOriginInfoResponseDto.username();
     }
 
 

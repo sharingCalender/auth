@@ -3,7 +3,7 @@ package sharingcalender.auth.dto;
 
 import jakarta.validation.constraints.NotNull;
 
-public record OriginUserDto (
+public record UserOriginInfoResponseDto(
     @NotNull
     String username,
 
