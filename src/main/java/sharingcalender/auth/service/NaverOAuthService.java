@@ -1,6 +1,7 @@
 package sharingcalender.auth.service;
 
 
+import feign.FeignException;
 import java.net.URLEncoder;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,10 @@ import sharingcalender.auth.dto.oauth.naver.request.OAuthUserIsExistRequestDto;
 import sharingcalender.auth.dto.oauth.naver.response.NaverInfoResponseDto;
 import sharingcalender.auth.dto.oauth.naver.response.NaverTokenIssueResponseDto;
 import sharingcalender.auth.dto.oauth.naver.response.NaverUserInfoResponseDto;
+import sharingcalender.auth.exception.AuthenticationException;
+import sharingcalender.auth.exception.BadRequestException;
+import sharingcalender.auth.exception.UnAuthorizedException;
+import sharingcalender.auth.repository.NaverTokenRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +53,9 @@ public class NaverOAuthService {
 
     private final JwtTokenService jwtTokenService;
 
+    private final NaverTokenRepository naverTokenRepository;
+
+
     public String getOAuth2CodeUrl() {
         String state = URLEncoder.encode(UUID.randomUUID().toString());
 
@@ -70,38 +78,64 @@ public class NaverOAuthService {
         // 기존회원인지 아닌지 여부 확인하고 가입처리
         oauthUserIsExist(userInfoResponse);
 
+
+        // naver token info redis 저장
+        naverTokenSaveInRedis(tokenResponse,userInfoResponse);
+
         //jwt 토큰 발급하고 리턴해서 프런트로 넘기기
 
-        TokenResponseDto tokenResponseDto = jwtTokenService.issueToken(
+        return jwtTokenService.issueToken(
             userInfoResponse.id() + "-" + PROVIDER, "USER");
+    }
 
-        return tokenResponseDto;
-
+    private void naverTokenSaveInRedis(NaverTokenIssueResponseDto tokenResponse,
+        NaverUserInfoResponseDto userInfoResponse) {
+        naverTokenRepository.saveTokenInRedis(tokenResponse, userInfoResponse);
     }
 
     private void oauthUserIsExist(NaverUserInfoResponseDto userInfoResponse) {
-        userAdapter.oauthUserIsExist(
-            new OAuthUserIsExistRequestDto(userInfoResponse.id(), userInfoResponse.name(),
-                userInfoResponse.mobile(), userInfoResponse.email(), PROVIDER, null));
+        try {
+            userAdapter.oauthUserIsExist(
+                new OAuthUserIsExistRequestDto(userInfoResponse.id(), userInfoResponse.name(),
+                    userInfoResponse.mobile(), userInfoResponse.email(), PROVIDER, null));
+
+        } catch (FeignException e) {
+            throw new BadRequestException("UserIsExist Check Fail");
+        }
+
 
     }
 
     private NaverTokenIssueResponseDto getNaverAccessToken(
         String code, String state) {
 
-        ResponseEntity<NaverTokenIssueResponseDto> accessTokenResponse = naverOAuthAdapter.getAccessToken(
-            grant_type, clientId, clientSecret, code, state);
+        try {
+            ResponseEntity<NaverTokenIssueResponseDto> accessTokenResponse = naverOAuthAdapter.getAccessToken(
+                grant_type, clientId, clientSecret, code, state);
 
-        return accessTokenResponse.getBody();
+            return accessTokenResponse.getBody();
+
+        } catch (FeignException e) {
+            throw new UnAuthorizedException("Naver Get Token Fail");
+        }
+
+
     }
 
     private NaverUserInfoResponseDto getNaverUserInfo(
         NaverTokenIssueResponseDto tokenResponse) {
 
-        ResponseEntity<NaverInfoResponseDto> userInfoResponse = naverUserInfoAdapter.getNaverUserInfo(
-            "Bearer " + " " + tokenResponse.access_token());
+        try {
+            ResponseEntity<NaverInfoResponseDto> userInfoResponse = naverUserInfoAdapter.getNaverUserInfo(
+                "Bearer " + " " + tokenResponse.access_token());
 
-        return userInfoResponse.getBody().response();
+            return userInfoResponse.getBody().response();
+
+        } catch (FeignException e) {
+            throw new AuthenticationException("Naver Get User Info By AccessToken Fail");
+        }
+
+
     }
 
 }

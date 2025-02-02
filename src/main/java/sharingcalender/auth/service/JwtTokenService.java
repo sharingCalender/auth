@@ -3,6 +3,7 @@ package sharingcalender.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import sharingcalender.auth.exception.BadRequestException;
 import sharingcalender.auth.repository.RefreshTokenRepository;
 import sharingcalender.auth.dto.TokenResponseDto;
 import sharingcalender.auth.jwt.JwtUtil;
@@ -22,6 +23,21 @@ public class JwtTokenService {
         refreshTokenRepository.saveRefreshToken(username, role, refreshToken);
 
         return new TokenResponseDto(accessToken, refreshToken);
+    }
+
+    public TokenResponseDto reissueToken(String refreshToken) {
+        String username = jwtUtil.getUsername(refreshToken);
+        String role = jwtUtil.getRole(refreshToken);
+
+        String savedRefreshToken = refreshTokenRepository.getRefreshToken(username, role);
+
+        if (!savedRefreshToken.equals(refreshToken)) {
+            throw new BadRequestException("Refresh Token Is Not Valid");
+        }
+
+        refreshTokenRepository.deleteRefreshToken(username, role);
+
+        return issueToken(username, role);
     }
 
 

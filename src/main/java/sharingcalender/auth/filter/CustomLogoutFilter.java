@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.GenericFilterBean;
 import sharingcalender.auth.service.JwtTokenService;
 
@@ -37,7 +38,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         String authorization = request.getHeader("Authorization");
         if (authorization == null || !authorization.startsWith("Bearer")) {
-            filterChain.doFilter(request, response);
+//            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
