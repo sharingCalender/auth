@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import sharingcalender.auth.adapter.UserAdapter;
 import sharingcalender.auth.dto.UserOriginInfoResponseDto;
-import sharingcalender.auth.exception.OriginUserGetInfoFailException;
+import sharingcalender.auth.exception.ResourceNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class UserService {
 
         } catch (FeignException e) {
 
-            throw new OriginUserGetInfoFailException("Get Origin User Info Fail");
+            throw new ResourceNotFoundException("Get Origin User Info Fail");
 
         }
 
