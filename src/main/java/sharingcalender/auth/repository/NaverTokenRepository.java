@@ -13,15 +13,19 @@ import sharingcalender.auth.dto.oauth.naver.response.NaverUserInfoResponseDto;
 public class NaverTokenRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private static final String PROVIDER = "NAVER";
+
 
     public void saveTokenInRedis(NaverTokenIssueResponseDto tokenResponse,
         NaverUserInfoResponseDto userInfoResponse) {
-        String hashKey = userInfoResponse.id() + "-" + PROVIDER;
+        String hashKey = userInfoResponse.email();
         redisTemplate.opsForHash().put(hashKey, "access_token", tokenResponse.access_token());
         redisTemplate.opsForHash().put(hashKey, "refresh_token", tokenResponse.access_token());
         redisTemplate.opsForHash().put(hashKey, "token_type", tokenResponse.token_type());
         redisTemplate.expire(hashKey, Duration.ofSeconds(tokenResponse.expires_in())); // 3600 초
 
+    }
+
+    public void deleteNaveTokenInRedis(String username) {
+        redisTemplate.delete(username);
     }
 }

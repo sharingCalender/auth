@@ -20,6 +20,7 @@ import sharingcalender.auth.dto.oauth.naver.response.NaverUserInfoResponseDto;
 import sharingcalender.auth.exception.AuthenticationException;
 import sharingcalender.auth.exception.BadRequestException;
 import sharingcalender.auth.exception.UnAuthorizedException;
+import sharingcalender.auth.jwt.JwtUtil;
 import sharingcalender.auth.repository.NaverTokenRepository;
 
 @Service
@@ -55,6 +56,7 @@ public class NaverOAuthService {
 
     private final NaverTokenRepository naverTokenRepository;
 
+    private final JwtUtil jwtUtil;
 
     public String getOAuth2CodeUrl() {
         String state = URLEncoder.encode(UUID.randomUUID().toString());
@@ -84,13 +86,18 @@ public class NaverOAuthService {
 
         //jwt 토큰 발급하고 리턴해서 프런트로 넘기기
 
-        return jwtTokenService.issueToken(
-            userInfoResponse.id() + "-" + PROVIDER, "USER");
+        return jwtTokenService.issueToken(userInfoResponse.email(), "USER");
     }
 
     private void naverTokenSaveInRedis(NaverTokenIssueResponseDto tokenResponse,
         NaverUserInfoResponseDto userInfoResponse) {
         naverTokenRepository.saveTokenInRedis(tokenResponse, userInfoResponse);
+    }
+
+    public void deleteNaverTokenInRedis(String refreshToken) {
+        String username = jwtUtil.getUsername(refreshToken);
+
+        naverTokenRepository.deleteNaveTokenInRedis(username);
     }
 
     private void oauthUserIsExist(NaverUserInfoResponseDto userInfoResponse) {

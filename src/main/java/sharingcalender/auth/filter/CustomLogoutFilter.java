@@ -11,11 +11,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.GenericFilterBean;
 import sharingcalender.auth.service.JwtTokenService;
+import sharingcalender.auth.service.NaverOAuthService;
 
 @RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JwtTokenService jwtTokenService;
+
+    private final NaverOAuthService naverOAuthService;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
@@ -49,6 +52,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
+
+        naverOAuthService.deleteNaverTokenInRedis(refreshToken);
+
 
         response.setStatus(HttpServletResponse.SC_OK);
 

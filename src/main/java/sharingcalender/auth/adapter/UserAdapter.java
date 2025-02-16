@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import sharingcalender.auth.dto.UserOriginInfoResponseDto;
 import sharingcalender.auth.dto.oauth.naver.request.OAuthUserIsExistRequestDto;
 
-@FeignClient(value = "calender-service")
+@FeignClient(value = "calendar-service")
 public interface UserAdapter {
 
-    @GetMapping("/api/calender/user/{username}")
+    @GetMapping("/api/calendar/user/{username}")
     ResponseEntity<UserOriginInfoResponseDto> getOriginUserInfo(@PathVariable("username") String username);
 
-    @PostMapping("/api/calender/user/oauth/isExist")
+    @PostMapping("/api/calendar/user/oauth/isExist")
     ResponseEntity<Void> oauthUserIsExist(
         @RequestBody OAuthUserIsExistRequestDto OAuthUserIsExistRequestDto);
 
