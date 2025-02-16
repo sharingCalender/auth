@@ -22,6 +22,7 @@ import sharingcalender.auth.filter.CustomLoginFilter;
 import sharingcalender.auth.filter.CustomLogoutFilter;
 import sharingcalender.auth.jwt.JwtUtil;
 import sharingcalender.auth.service.JwtTokenService;
+import sharingcalender.auth.service.NaverOAuthService;
 import sharingcalender.auth.user.userdetailsservice.OriginUserDetailsService;
 
 @Configuration
@@ -33,6 +34,8 @@ public class SecurityConfig {
     private final OriginUserDetailsService originUserDetailsService;
     private final ObjectMapper objectMapper;
     private final JwtTokenService jwtTokenService;
+
+    private final NaverOAuthService naverOAuthService;
 
     @Bean
     public PasswordEncoder bCryptPasswordEncoder() {
@@ -94,7 +97,8 @@ public class SecurityConfig {
     }
 
     private CustomLogoutFilter customLogoutFilter() {
-        CustomLogoutFilter customLogoutFilter = new CustomLogoutFilter(jwtTokenService);
+        CustomLogoutFilter customLogoutFilter = new CustomLogoutFilter(jwtTokenService,
+            naverOAuthService);
 
         return customLogoutFilter;
     }
