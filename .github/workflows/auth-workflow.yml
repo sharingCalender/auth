@@ -30,6 +30,7 @@ jobs:
 
       - name: Build and Push
         uses: docker/build-push-action@v6 # 이미지를 빌드하고 docker hub 에 푸쉬한다.
+        if: github.ref == 'refs/heads/develop'
         with:
           context: .  # Dockerfile 이 있는 위치
           file: ./Dockerfile # Dockerfile 경로
