@@ -1,10 +1,21 @@
 spring:
   application:
     name: auth-service
-  profiles:
-    active: dev
+
+---
+spring:
+
   config:
+    activate:
+      on-profile: dev
     import: optional:configserver:http://${username}:${password}@localhost:9000
+
+---
+spring:
+  config:
+    activate:
+      on-profile: live
+    import: optional:configserver:http://${secrets.username}:${secrets.password}@config-server:9000
 
 
 
