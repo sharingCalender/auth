@@ -1,0 +1,41 @@
+name: auth-workflow.yml
+
+
+on:
+  push:
+    branches:
+      - develop # develop 브랜치에 푸쉬될 때 실행되도록 한다.
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed # develop 브랜치에 merge 될 때만 실행되도록 한다.
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest # 최신 버전의 ubuntu 러너를 사용한다.
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4 # 현재 리포지토리를 체크아웃한다.
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3 # docker buildx 를 설정한다.
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3 # 도커 허브에 로그인한다.
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}} # docker hub 사용자 이름을 가져온다.
+          password: ${{secrets.DOCKERHUB_TOKEN}}  # docker hub 액세스 토큰을 가져온다.
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6 # 이미지를 빌드하고 docker hub 에 푸쉬한다.
+        with:
+          context: .  # Dockerfile 이 있는 위치
+          file: ./Dockerfile # Dockerfile 경로
+          push: true # 이미지를 레지스트리에 푸쉬
+          tags: ${{secrets.DOCKERHUB_USERNAME}}/auth
+          platforms: linux/amd64
+
+
+          
