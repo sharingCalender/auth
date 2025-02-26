@@ -15,7 +15,10 @@ spring:
   config:
     activate:
       on-profile: live
-    import: optional:configserver:http://${secrets.username}:${secrets.password}@config-server:9000
+
+
+    import: "aws-secretsmanager:/secret/calendar,optional:configserver:http://${secrets.username}:${secrets.password}@config-server:9000"
+
 
 
 

@@ -19,7 +19,7 @@ WORKDIR /app
 ARG SECRETS_USERNAME
 ARG SECRETS_PASSWORD
 
-ENV SPRING_CONFIG_IMPORT=optional:configserver:http://${SECRETS_USERNAME}:${SECRETS_PASSWORD}@config-server:9000
+ENV SPRING_CONFIG_IMPORT="aws-secretsmanager:/secret/calendar,optional:configserver:http://${SECRETS_USERNAME}:${SECRETS_PASSWORD}@config-server:9000"
 
 COPY --from=build /app/build/libs/*.jar /app/auth.jar
 
