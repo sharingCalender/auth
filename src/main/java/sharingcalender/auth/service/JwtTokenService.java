@@ -3,7 +3,9 @@ package sharingcalender.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import sharingcalender.auth.exception.AuthenticationException;
 import sharingcalender.auth.exception.BadRequestException;
+import sharingcalender.auth.exception.UnAuthorizedException;
 import sharingcalender.auth.repository.RefreshTokenRepository;
 import sharingcalender.auth.dto.TokenResponseDto;
 import sharingcalender.auth.jwt.JwtUtil;
@@ -16,6 +18,11 @@ public class JwtTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public TokenResponseDto issueToken(String username, String role) {
+
+        if (refreshTokenRepository.isExistRefreshToken(username, role)) {
+            throw new UnAuthorizedException("이미 로그인한 계정입니다.");
+        }
+
         String accessToken = jwtUtil.createAccessJwt(username, role);
 
         String refreshToken = jwtUtil.createRefreshJwt(username, role);

@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import sharingcalender.auth.dto.LoginRequestDto;
 import sharingcalender.auth.dto.MessageDto;
 import sharingcalender.auth.dto.TokenResponseDto;
+import sharingcalender.auth.exception.UnAuthorizedException;
 import sharingcalender.auth.service.JwtTokenService;
 
 @RequiredArgsConstructor
@@ -57,7 +58,18 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = auth.getAuthority();
 
         // access 와 refresh 토큰 만들고 refresh 토큰 레디스에 저장하기
-        TokenResponseDto tokenResponseDto = jwtTokenService.issueToken(username, role);
+
+        TokenResponseDto tokenResponseDto = null;
+
+        try {
+            tokenResponseDto = jwtTokenService.issueToken(username, role);
+
+        } catch (UnAuthorizedException e) {
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            objectMapper.writeValue(response.getOutputStream(), new MessageDto(e.getMessage()));
+            return;
+        }
 
 
         response.setContentType("application/json");
