@@ -10,6 +10,9 @@ spring:
       on-profile: dev
     import: optional:configserver:http://${username}:${password}@localhost:9000
 
+logging:
+  config: classpath:logback-dev.xml
+
 ---
 spring:
   config:
@@ -19,7 +22,8 @@ spring:
 
     import: "aws-secretsmanager:/secret/calendar,optional:configserver:http://${secrets.username}:${secrets.password}@config-server:9000"
 
-
+logging:
+  config: classpath:logback-live.xml
 
 
 

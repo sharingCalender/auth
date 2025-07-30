@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,6 +22,7 @@ import sharingcalender.auth.exception.UnAuthorizedException;
 import sharingcalender.auth.service.JwtTokenService;
 
 @RequiredArgsConstructor
+@Slf4j
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final ObjectMapper objectMapper;
@@ -41,6 +43,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
                 .authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         } catch (IOException e) {
+            log.warn("Parsing Exception When Login : ", e);
+
             throw new RuntimeException(e);
         }
 
@@ -49,7 +53,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain, Authentication authResult)
-        throws IOException, ServletException {
+        throws IOException {
 
         String username = authResult.getName();
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
@@ -81,7 +85,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, AuthenticationException failed)
-        throws IOException, ServletException {
+        throws IOException {
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
