@@ -8,17 +8,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.GenericFilterBean;
 import sharingcalender.auth.service.JwtTokenService;
-import sharingcalender.auth.service.NaverOAuthService;
+import sharingcalender.auth.service.OauthService;
 
 @RequiredArgsConstructor
+@Slf4j
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JwtTokenService jwtTokenService;
 
-    private final NaverOAuthService naverOAuthService;
+    private final OauthService oauthService;
+
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
@@ -41,7 +43,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         String authorization = request.getHeader("Authorization");
         if (authorization == null || !authorization.startsWith("Bearer")) {
-//            filterChain.doFilter(request, response);
+
+            log.debug("Logout request rejected: Missing or malformed Authorization header");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -49,11 +52,12 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String refreshToken = authorization.substring(7);
 
         if (!jwtTokenService.deleteRefreshToken(refreshToken)) {
+            log.debug("Logout request rejected: Refresh Token Not Found In Redis");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        naverOAuthService.deleteNaverTokenInRedis(refreshToken);
+        oauthService.deleteNaverTokenInRedis(refreshToken);
 
 
         response.setStatus(HttpServletResponse.SC_OK);

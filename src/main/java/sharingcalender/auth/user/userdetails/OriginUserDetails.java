@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import sharingcalender.auth.dto.UserOriginInfoResponseDto;
+import sharingcalender.auth.dto.originuser.response.UserOriginInfoResponseDto;
 
 
 public class OriginUserDetails implements UserDetails {

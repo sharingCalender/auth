@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import sharingcalender.auth.dto.UserOriginInfoResponseDto;
-import sharingcalender.auth.dto.oauth.naver.request.OAuthUserIsExistRequestDto;
+import sharingcalender.auth.dto.originuser.response.UserOriginInfoResponseDto;
+import sharingcalender.auth.dto.oauth.request.OAuthUserIsExistRequestDto;
 
 @FeignClient(value = "calendar-service")
 public interface UserAdapter {

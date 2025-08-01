@@ -12,42 +12,41 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import sharingcalender.auth.dto.TokenResponseDto;
-import sharingcalender.auth.dto.oauth.naver.response.NaverTokenIssueResponseDto;
-import sharingcalender.auth.dto.oauth.naver.request.NaverTokenRequestDto;
-import sharingcalender.auth.dto.oauth.naver.response.NaverUserInfoResponseDto;
+import sharingcalender.auth.dto.jwt.response.JwtTokenResponseDto;
+import sharingcalender.auth.dto.oauth.request.OauthTokenRequestDto;
+import sharingcalender.auth.dto.oauth.request.GetOauthUriRequestDto;
 import sharingcalender.auth.exception.BadRequestException;
-import sharingcalender.auth.service.NaverOAuthService;
+import sharingcalender.auth.service.OauthService;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/oauth")
-public class NaverOAuthController {
-
-    private final NaverOAuthService naverOAuthService;
+public class OAuthController {
 
 
-    @PostMapping("/naver/login")
-    public ResponseEntity<Map<String, String>> naverOauthLogin() {
+    private final OauthService oauthService;
 
-        String oAuth2CodeUrl = naverOAuthService.getOAuth2CodeUrl();
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> oauthLogin(
+        @RequestBody GetOauthUriRequestDto getOauthUriRequestDto, BindingResult bindingResult) {
+
+        String oAuth2CodeUrl = oauthService.getOAuthUri(getOauthUriRequestDto);
+
         Map<String, String> response = new HashMap<>();
-        response.put("redirectURL", "redirect:" + oAuth2CodeUrl);
+        response.put("redirectURL", oAuth2CodeUrl);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/naver/callback/redirect")
-    public ResponseEntity<TokenResponseDto> naverGetToken(@RequestBody @Valid NaverTokenRequestDto naverTokenRequestDto,
+    @PostMapping("/callback/redirect")
+    public ResponseEntity<JwtTokenResponseDto> GetJwtToken(@RequestBody @Valid OauthTokenRequestDto oauthTokenRequestDto,
         BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new BadRequestException("Code Or State has Wrong Value");
         }
 
-        TokenResponseDto jwtToken = naverOAuthService.getJwtToken(
-            naverTokenRequestDto.code(),
-            naverTokenRequestDto.state());
+        JwtTokenResponseDto jwtToken = oauthService.getJwtToken(oauthTokenRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(jwtToken);
 
