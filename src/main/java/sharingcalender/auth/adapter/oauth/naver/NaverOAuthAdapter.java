@@ -1,4 +1,4 @@
-package sharingcalender.auth.adapter.oauth;
+package sharingcalender.auth.adapter.oauth.naver;
 
 
 

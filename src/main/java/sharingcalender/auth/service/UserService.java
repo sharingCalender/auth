@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import sharingcalender.auth.adapter.UserAdapter;
-import sharingcalender.auth.dto.UserOriginInfoResponseDto;
+import sharingcalender.auth.dto.originuser.response.UserOriginInfoResponseDto;
 import sharingcalender.auth.exception.ResourceNotFoundException;
 
 @Service

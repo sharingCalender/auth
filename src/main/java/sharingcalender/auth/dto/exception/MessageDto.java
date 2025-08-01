@@ -1,4 +1,4 @@
-package sharingcalender.auth.dto;
+package sharingcalender.auth.dto.exception;
 
 public record MessageDto (
     String message

@@ -1,4 +1,4 @@
-package sharingcalender.auth.dto.oauth.naver.request;
+package sharingcalender.auth.dto.oauth.request;
 
 import jakarta.validation.constraints.NotBlank;
 

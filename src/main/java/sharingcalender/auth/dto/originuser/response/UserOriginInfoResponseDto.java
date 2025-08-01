@@ -1,4 +1,4 @@
-package sharingcalender.auth.dto;
+package sharingcalender.auth.dto.originuser.response;
 
 
 import jakarta.validation.constraints.NotNull;
